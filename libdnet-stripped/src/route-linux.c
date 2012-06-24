@@ -215,7 +215,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 	int ret = 0;
 
 	if ((fp = fopen(PROC_ROUTE_FILE, "r")) != NULL) {
-		char ifbuf[16];
+		char ifbuf[INTF_NAME_LEN];
 		int i, iflags, refcnt, use, metric, mss, win, irtt;
 		uint32_t mask;
 		
@@ -237,6 +237,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 				continue;
 			
 			entry.route_gw.addr_bits = IP_ADDR_BITS;
+			strlcpy(entry.intf_name, ifbuf, sizeof(entry.intf_name));
 			
 			if ((ret = callback(&entry, arg)) != 0)
 				break;
