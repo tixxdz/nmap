@@ -237,6 +237,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 				continue;
 			
 			entry.route_gw.addr_bits = IP_ADDR_BITS;
+
 			strlcpy(entry.intf_name, ifbuf, sizeof(entry.intf_name));
 			
 			if ((ret = callback(&entry, arg)) != 0)
@@ -245,16 +246,19 @@ route_loop(route_t *r, route_handler callback, void *arg)
 		fclose(fp);
 	}
 	if (ret == 0 && (fp = fopen(PROC_IPV6_ROUTE_FILE, "r")) != NULL) {
+		char ifbuf[INTF_NAME_LEN+1];
 		char s[33], d[8][5], n[8][5];
 		u_int slen, dlen;
 		
 		while (fgets(buf, sizeof(buf), fp) != NULL) {
 			memset(&entry, 0, sizeof(route_entry));
 			sscanf(buf, "%04s%04s%04s%04s%04s%04s%04s%04s %02x "
-			    "%32s %02x %04s%04s%04s%04s%04s%04s%04s%04s ",
+			    "%32s %02x %04s%04s%04s%04s%04s%04s%04s%04s %*x "
+			    "%*x %*x %*x %16s\n",
 			    d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
 			    &dlen, s, &slen,
-			    n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7]);
+			    n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7],
+			    ifbuf);
 			snprintf(buf, sizeof(buf), "%s:%s:%s:%s:%s:%s:%s:%s/%d",
 			    d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
 			    dlen);
@@ -264,6 +268,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 			    IP6_ADDR_BITS);
 			addr_aton(buf, &entry.route_gw);
 			
+			strlcpy(entry.intf_name, ifbuf, sizeof(entry.intf_name));
 			if ((ret = callback(&entry, arg)) != 0)
 				break;
 		}
