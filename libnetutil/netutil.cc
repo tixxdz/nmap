@@ -1591,6 +1591,8 @@ static int collect_dnet_routes(const struct route_entry *entry, void *arg) {
 
   /* Now for the important business */
   dcrn->routes[dcrn->numroutes].device = NULL;
+  Strncpy(dcrn->routes[dcrn->numroutes].devname,
+      entry->intf_name, sizeof(dcrn->routes[dcrn->numroutes].devname));
   addr_ntos(&entry->route_dst, (struct sockaddr *) &dcrn->routes[dcrn->numroutes].dest);
   dcrn->routes[dcrn->numroutes].netmask_bits = entry->route_dst.addr_bits;
   addr_ntos(&entry->route_gw, (struct sockaddr *) &dcrn->routes[dcrn->numroutes].gw);
