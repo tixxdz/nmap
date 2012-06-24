@@ -220,6 +220,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 		uint32_t mask;
 		
 		while (fgets(buf, sizeof(buf), fp) != NULL) {
+			memset(&entry, 0, sizeof(route_entry));
 			i = sscanf(buf, "%16s %X %X %X %d %d %d %X %d %d %d\n",
 			    ifbuf, &entry.route_dst.addr_ip,
 			    &entry.route_gw.addr_ip, &iflags, &refcnt, &use,
@@ -247,6 +248,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 		u_int slen, dlen;
 		
 		while (fgets(buf, sizeof(buf), fp) != NULL) {
+			memset(&entry, 0, sizeof(route_entry));
 			sscanf(buf, "%04s%04s%04s%04s%04s%04s%04s%04s %02x "
 			    "%32s %02x %04s%04s%04s%04s%04s%04s%04s%04s ",
 			    d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
