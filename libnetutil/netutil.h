@@ -109,6 +109,9 @@ extern "C" {
 
 #include "dnet.h"
 
+#ifndef INTF_NAME_LEN
+#define INTF_NAME_LEN 16
+#endif
 
 /* It is VERY important to never change the value of these two constants. 
  * Specially, OP_FAILURE should never be positive, as some pieces of code take
@@ -291,6 +294,7 @@ struct route_nfo {
 };
 
 struct sys_route {
+  char devname[INTF_NAME_LEN];
   struct interface_info *device;
   struct sockaddr_storage dest;
   u16 netmask_bits;
