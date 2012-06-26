@@ -1525,6 +1525,7 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
     struct sys_route *route = &dcrn->routes[i];
     struct sockaddr_storage *routeaddr;
 
+    /* First see if the gateway was set */
     if (sockaddr_equal_zero(&route->gw))
       routeaddr = &route->dest;
     else
