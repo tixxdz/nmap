@@ -1524,6 +1524,7 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
        directly matches the address of an interface. */
     struct sys_route *route = &dcrn->routes[i];
     struct sockaddr_storage *routeaddr;
+    int dev_found = 0;
 
     /* First see if the gateway was set */
     if (sockaddr_equal_zero(&route->gw))
@@ -1534,6 +1535,7 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
     for (j = 0; j < numifaces; j++) {
       if (strcmp(route->devname, ifaces[j].devfullname) == 0 ||
         strcmp(route->devname, ifaces[j].devname) == 0) {
+        dev_found = 1;
         if (sockaddr_equal_netmask(&ifaces[j].addr,
                 routeaddr, ifaces[j].netmask_bits)) {
           route->device = &ifaces[j];
@@ -1541,6 +1543,10 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
         }
       }
     }
+
+    if (dev_found == 0)
+      netutil_error("WARNING: failed to find device '%s' which was referenced in routes",
+          route->devname);
   }
 
   /* Find any remaining routes that don't yet have an interface, and try to
