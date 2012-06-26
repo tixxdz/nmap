@@ -1532,10 +1532,13 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
       routeaddr = &route->gw;
 
     for (j = 0; j < numifaces; j++) {
-      if (sockaddr_equal_netmask(&ifaces[j].addr,
-              routeaddr, ifaces[j].netmask_bits)) {
-        route->device = &ifaces[j];
-        break;
+      if (strcmp(route->devname, ifaces[j].devfullname) == 0 ||
+        strcmp(route->devname, ifaces[j].devname) == 0) {
+        if (sockaddr_equal_netmask(&ifaces[j].addr,
+                routeaddr, ifaces[j].netmask_bits)) {
+          route->device = &ifaces[j];
+          break;
+        }
       }
     }
   }
