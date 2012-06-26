@@ -1522,9 +1522,11 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
   for (i = 0; i < dcrn->numroutes; i++) {
     /* First we match up routes whose gateway or destination address
        directly matches the address of an interface. */
+    struct sys_route *route = &dcrn->routes[i];
+
     for (j = 0; j < numifaces; j++) {
-      if (sockaddr_equal_netmask(&ifaces[j].addr, &dcrn->routes[i].gw, ifaces[j].netmask_bits)) {
-        dcrn->routes[i].device = &ifaces[j];
+      if (sockaddr_equal_netmask(&ifaces[j].addr, &route->gw, ifaces[j].netmask_bits)) {
+        route->device = &ifaces[j];
         break;
       }
     }
