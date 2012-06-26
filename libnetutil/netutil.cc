@@ -1520,44 +1520,14 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
   if( (ifaces=getinterfaces(&numifaces, NULL, 0))==NULL )
     return NULL;
   for (i = 0; i < dcrn->numroutes; i++) {
-    struct interface_info *ii;
-    struct sys_route *route;
-
-    ii = NULL;
-    route = &dcrn->routes[i];
-    /* try alias names first */
-    for (j = 0; j < numifaces; j++) {
-      if (!strcmp(route->devname, ifaces[j].devfullname)) {
-        ii = &ifaces[j];
-        break;
-      }
-    }
-
-    if (!ii) {
-      for (j = 0; j < numifaces; j++) {
-        if (!strcmp(route->devname, ifaces[j].devname)) {
-          ii = &ifaces[j];
-          break;
-        }
-      }
-    }
-
-    if (!ii) {
-      netutil_error("Failed to find device %s which was referenced in routes",
-        route->devname);
-      continue;
-    }
-
     /* First we match up routes whose gateway or destination address
        directly matches the address of an interface. */
-    if (sockaddr_equal_netmask(&ii->addr, &route->gw, ii->netmask_bits))
-      route->device = ii;
-    /*for (j = 0; j < numifaces; j++) {
+    for (j = 0; j < numifaces; j++) {
       if (sockaddr_equal_netmask(&ifaces[j].addr, &dcrn->routes[i].gw, ifaces[j].netmask_bits)) {
         dcrn->routes[i].device = &ifaces[j];
         break;
       }
-    }*/
+    }
   }
 
   /* Find any remaining routes that don't yet have an interface, and try to
