@@ -1544,10 +1544,13 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
       /* Does this route's gateway go through another route with an assigned
          interface? */
       for (j = 0; j < dcrn->numroutes; j++) {
-        if (sockaddr_equal(&dcrn->routes[i].gw, &dcrn->routes[j].dest)
-            && dcrn->routes[j].device != NULL) {
-          dcrn->routes[i].device = dcrn->routes[j].device;
-          changed = 1;
+        if (dcrn->routes[j].device != NULL) {
+          /* Check if it is the same network interface */
+          if (!strcmp(dcrn->routes[i].devname, dcrn->routes[j].devname) &&
+            sockaddr_equal(&dcrn->routes[i].gw, &dcrn->routes[j].dest)) {
+            dcrn->routes[i].device = dcrn->routes[j].device;
+            changed = 1;
+          }
         }
       }
     }
