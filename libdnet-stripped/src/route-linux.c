@@ -248,8 +248,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 	if (ret == 0 && (fp = fopen(PROC_IPV6_ROUTE_FILE, "r")) != NULL) {
 		char ifbuf[INTF_NAME_LEN+1];
 		char s[33], d[8][5], n[8][5];
-		u_int slen, dlen;
-		int iflags;
+		u_int slen, dlen, iflags;
 		
 		while (fgets(buf, sizeof(buf), fp) != NULL) {
 			memset(&entry, 0, sizeof(struct route_entry));
