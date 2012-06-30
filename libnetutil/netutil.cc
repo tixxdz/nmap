@@ -1524,13 +1524,19 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
        directly matches the address of an interface. */
     struct sys_route *route = &dcrn->routes[i];
     struct sockaddr_storage *routeaddr;
+    int default_route = 0;
     int dev_found = 0;
 
     /* First see if the gateway was set */
-    if (sockaddr_equal_zero(&route->gw))
+    if (sockaddr_equal_zero(&route->gw)) {
       routeaddr = &route->dest;
-    else
+    } else {
       routeaddr = &route->gw;
+      /* Is this a default route ?
+       * We explicitly do the check here to see if the gateway was set */
+      if (sockaddr_equal_zero(&route->dest))
+        default_route = 1;
+    }
 
     for (j = 0; j < numifaces; j++) {
       if (strcmp(route->devname, ifaces[j].devfullname) == 0 ||
@@ -1544,9 +1550,25 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
       }
     }
 
-    if (dev_found == 0)
+    if (dev_found == 0) {
       netutil_error("WARNING: failed to find device '%s' which was referenced in routes",
           route->devname);
+      continue;
+    }
+
+    /* Perform a last check: perhaps this is the default route and
+     * the address of the interface does not match the gateway address. */
+    if (!route->device && default_route) {
+      for (j = 0; j < numifaces; j++) {
+        if ((strcmp(route->devname, ifaces[j].devfullname) == 0 ||
+          strcmp(route->devname, ifaces[j].devname) == 0) &&
+          route->gw.ss_family == ifaces[j].addr.ss_family) {
+          route->device = &ifaces[j];
+          break;
+        }
+      }
+    }
+
   }
 
   /* Find any remaining routes that don't yet have an interface, and try to
