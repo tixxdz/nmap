@@ -249,16 +249,21 @@ route_loop(route_t *r, route_handler callback, void *arg)
 		char ifbuf[INTF_NAME_LEN+1];
 		char s[33], d[8][5], n[8][5];
 		u_int slen, dlen;
+		int iflags;
 		
 		while (fgets(buf, sizeof(buf), fp) != NULL) {
 			memset(&entry, 0, sizeof(struct route_entry));
 			sscanf(buf, "%04s%04s%04s%04s%04s%04s%04s%04s %02x "
 			    "%32s %02x %04s%04s%04s%04s%04s%04s%04s%04s %*x "
-			    "%*x %*x %*x %16s\n",
+			    "%*x %*x %x %16s\n",
 			    d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
 			    &dlen, s, &slen,
 			    n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7],
-			    ifbuf);
+			    &iflags, ifbuf);
+
+			if (!(iflags & RTF_UP))
+				continue;
+
 			snprintf(buf, sizeof(buf), "%s:%s:%s:%s:%s:%s:%s:%s/%d",
 			    d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
 			    dlen);
