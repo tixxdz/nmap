@@ -1559,12 +1559,22 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
     /* Perform a last check: perhaps this is the default route and
      * the address of the interface does not match the gateway address. */
     if (!route->device && default_route) {
+      /* Try aliases first */
       for (j = 0; j < numifaces; j++) {
-        if ((strcmp(route->devname, ifaces[j].devfullname) == 0 ||
-          strcmp(route->devname, ifaces[j].devname) == 0) &&
+        if (strcmp(route->devname, ifaces[j].devfullname) == 0 &&
           route->gw.ss_family == ifaces[j].addr.ss_family) {
           route->device = &ifaces[j];
           break;
+        }
+      }
+
+      if (!route->device) {
+        for (j = 0; j < numifaces; j++) {
+          if (strcmp(route->devname, ifaces[j].devname) == 0 &&
+            route->gw.ss_family == ifaces[j].addr.ss_family) {
+            route->device = &ifaces[j];
+            break;
+          }
         }
       }
     }
