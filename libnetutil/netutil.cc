@@ -1588,7 +1588,7 @@ static struct dnet_collector_route_nfo *sysroutes_dnet_find_interfaces(struct dn
         if (dcrn->routes[j].device != NULL) {
           /* Check if it is the same network interface */
           if (!strcmp(dcrn->routes[i].devname, dcrn->routes[j].devname) &&
-            sockaddr_equal(&dcrn->routes[i].gw, &dcrn->routes[j].dest)) {
+            sockaddr_equal(&dcrn->routes[i].dest, &dcrn->routes[j].gw)) {
             dcrn->routes[i].device = dcrn->routes[j].device;
             changed = 1;
           }
