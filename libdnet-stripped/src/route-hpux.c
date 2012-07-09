@@ -147,8 +147,6 @@ route_loop(route_t *r, route_handler callback, void *arg)
 	}
 	close_mib(fd);
 
-	entry.route_dst.addr_type = entry.route_gw.addr_type = ADDR_TYPE_IP;
-	entry.route_dst.addr_bits = entry.route_gw.addr_bits = IP_ADDR_BITS;
 	n /= sizeof(*rtentries);
 	ret = 0;
 	
@@ -156,7 +154,11 @@ route_loop(route_t *r, route_handler callback, void *arg)
 		if (rtentries[i].Type != NMDIRECT &&
 		    rtentries[i].Type != NMREMOTE)
 			continue;
-		
+
+		memset(&entry, 0, sizeof(struct route_entry));
+
+		entry.route_dst.addr_type = entry.route_gw.addr_type = ADDR_TYPE_IP;
+		entry.route_dst.addr_bits = entry.route_gw.addr_bits = IP_ADDR_BITS;
 		entry.route_dst.addr_ip = rtentries[i].Dest;
 		addr_mtob(&rtentries[i].Mask, IP_ADDR_LEN,
 		    &entry.route_dst.addr_bits);

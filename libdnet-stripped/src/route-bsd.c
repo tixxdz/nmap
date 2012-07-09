@@ -317,6 +317,7 @@ route_loop(route_t *r, route_handler callback, void *arg)
 	for (ret = 0; next < lim; next += rtm->rtm_msglen) {
 		rtm = (struct rt_msghdr *)next;
 		sa = (struct sockaddr *)(rtm + 1);
+		memset(&entry, 0, sizeof(struct route_entry));
 
 		if ((rtm->rtm_addrs & RTA_DST) == 0)
 			/* Need a destination. */

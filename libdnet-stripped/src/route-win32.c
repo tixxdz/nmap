@@ -139,13 +139,15 @@ route_loop_getipforwardtable(route_t *r, route_handler callback, void *arg)
 		else if (ret != ERROR_INSUFFICIENT_BUFFER)
 			return (-1);
 	}
-	entry.route_dst.addr_type = ADDR_TYPE_IP;
-	entry.route_dst.addr_bits = IP_ADDR_BITS;
-	
-	entry.route_gw.addr_type = ADDR_TYPE_IP;
-	entry.route_gw.addr_bits = IP_ADDR_BITS;
 	
 	for (i = 0; i < (int)r->ipftable->dwNumEntries; i++) {
+		memset(&entry, 0, sizeof(struct route_entry));
+		entry.route_dst.addr_type = ADDR_TYPE_IP;
+		entry.route_dst.addr_bits = IP_ADDR_BITS;
+
+		entry.route_gw.addr_type = ADDR_TYPE_IP;
+		entry.route_gw.addr_bits = IP_ADDR_BITS;
+
 		entry.route_dst.addr_ip = r->ipftable->table[i].dwForwardDest;
 		addr_mtob(&r->ipftable->table[i].dwForwardMask, IP_ADDR_LEN,
 		    &entry.route_dst.addr_bits);
@@ -172,6 +174,7 @@ route_loop_getipforwardtable2(GETIPFORWARDTABLE2 GetIpForwardTable2,
 
 	for (i = 0; i < r->ipftable2->NumEntries; i++) {
 		MIB_IPFORWARD_ROW2 *row;
+		memset(&entry, 0, sizeof(struct route_entry));
 
 		row = &r->ipftable2->Table[i];
 		addr_ston((struct sockaddr *) &row->DestinationPrefix.Prefix, &entry.route_dst);
